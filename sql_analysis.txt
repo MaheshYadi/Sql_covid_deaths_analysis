@@ -1,0 +1,64 @@
+-- Using only relevant column data from the data set for data analysis
+
+select continent,location,date,total_cases,new_cases,total_deaths,new_deaths,population from portfolio_projects..CovidDeaths
+where continent is not null order by 2,3;
+
+-- Total no.of.cases for each country
+
+select sum(new_cases) total_cases,location from portfolio_projects..CovidDeaths  group by location order by 2;
+
+--total cases vs total deaths
+
+select max(total_cases) total_cases,max(total_deaths) total_deaths,location,(max(total_deaths)/max(total_cases))*100 as death_rate 
+from portfolio_projects..CovidDeaths group by location order by 3;
+
+-- total cases vs total deaths for each date in a location
+
+select location,date,total_cases,total_deaths,(total_deaths/total_cases)*100 as death_percentage 
+from portfolio_projects..CovidDeaths  order by 1,2;
+
+-- find total death_percentage per location
+
+select max(total_cases) total_cases,max(total_deaths) total_deaths,location,(max(total_deaths)/max(total_cases))*100 as death_percentage 
+from portfolio_projects..CovidDeaths  group by location order by 3;
+
+-- find total cases percentage per each location 
+
+select location,population,max(total_cases) total_no_of_cases, (max(total_cases)/population)*100 as cases_percentage 
+from portfolio_projects..CovidDeaths group by location,population order by 1;
+
+--total case percentage per each date in India
+
+select location,date,population,total_cases, (total_cases/population)*100 as cases_percentage 
+from portfolio_projects..CovidDeaths where location like '%India%' order by 1;
+
+-- find top 3 countries with highest infection rate
+
+select top 3 location,population,max(total_cases) total_no_of_cases, (max(total_cases)/population)*100 as infection_rate 
+from portfolio_projects..CovidDeaths group by location,population order by infection_rate desc;
+
+-- find top 3 countries with highest death percentage
+
+select top 3 max(total_cases) total_cases,max(total_deaths) total_deaths,location,(max(total_deaths)/max(total_cases))*100 as death_percentage 
+from portfolio_projects..CovidDeaths  group by location order by death_percentage desc;
+
+--find the death percentage in india
+
+select max(total_cases) total_cases,max(total_deaths) total_deaths,location,(max(total_deaths)/max(total_cases))*100 as death_percentage 
+from portfolio_projects..CovidDeaths  where location like '%India%' group by location order by 3;
+
+--find the total death count for each country
+
+select location,max(cast (total_deaths as int)) death_count from portfolio_projects..CovidDeaths 
+where continent is not null group by location order by death_count desc;
+
+--find the total cases and total deaths on each day throughout the world
+
+select date,sum(new_cases) total_no_cases,sum(cast(new_deaths as int)) total_deaths from portfolio_projects..CovidDeaths
+group by date having sum(new_cases) is not null and sum(cast(new_deaths as int)) is not null  order by date;
+
+--find the total no of cases and deaths,death percentage in the world
+
+select sum(new_cases) total_no_cases,sum(cast(new_deaths as int)) total_deaths,(sum(cast(new_deaths as int))/sum(new_cases)) *100 as death_percentage
+from portfolio_projects..CovidDeaths where continent is not null;
+
